@@ -187,11 +187,151 @@ int main()
     std::cout << "\n============ Part 8 ============\n\n";
     auto selectedEnemy = enemies.begin();
     
-    Enemy boss {999, "Ancient Dragon", 250, 500};
+    Enemy boss {999, "Ancient Dragon", 250, 5000};
 
     enemies.insert(enemies.begin(), boss);
-
     displayEnemies(enemies);
+
+    enemies.erase(enemies.begin());
+    displayEnemies(enemies);
+    // one should not assume that the variable selectedEnemy remains valid after the deletion operation as it may have been reset
+
+    std::cout << "\n============ Part 9 ============\n\n";
+
+    int sizeBeforeClenup = enemies.size();
+
+    auto itRemove = std::remove_if(enemies.begin(), enemies.end(),
+        [](const Enemy& e)
+        {
+			return e.health <= 0;
+        });
+        
+    enemies.erase(itRemove, enemies.end());
+
+    int removedCount = sizeBeforeClenup - enemies.size();
+
+    std::cout << "Removed " << removedCount << " enemies with health <=0\n\n";
+    std::cout << "Remaining enemies:\n";
+    displayEnemies(enemies);
+
+    std::cout << "\n============ Part 10 ============\n\n";
+    std::vector<int> spawnSlots;
+
+    spawnSlots.reserve(5);
+    std::cout << "Spawn slots size: " << spawnSlots.size() << "\n";
+	std::cout << "Spawn slots capacity: " << spawnSlots.capacity() << "\n";
+
+	// no, spawnSlots[0] does not exist until an element is added to spawnSlots
+    spawnSlots.resize(5);
+	std::cout << "Spawn slots size after resize: " << spawnSlots.size() << "\n";
+	std::cout << "Spawn slots capacity after resize: " << spawnSlots.capacity() << "\n";
+	for (int i = 0; i < spawnSlots.size(); ++i)
+	{
+		std::cout << "Spawn slot " << i << ": " << spawnSlots[i] << "\n";
+	}
+    // reserve() means: allocate memory but do not change the size
+    // resize() means: change the size of the vector
+    // spawnSlots[0] is now safe to access resize(5) actually constructs five
+    // elements, unlike reserve() which only allocates capacity without creating any elements or changing the vectors size
+
+    std::cout << "\n============ Part 11 ============\n\n";
+
+    int minScore;
+    int maxHealth;
+
+    std::cout << "Enter minimum score: " << "\n";
+	std::cin >> minScore;
+	std::cout << "Enter maximum health: " <<"\n";;
+	std::cin >> maxHealth;
+
+    auto satisfyingEnemy = std::find_if(enemies.begin(), enemies.end(),
+		[minScore, maxHealth](const Enemy& e)
+		{
+			if (e.score >= minScore && e.health <= maxHealth && e.health > 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		});
+    if(satisfyingEnemy!=enemies.end())
+    {
+        std::cout << "Found an enemy satisfying the criteria:\n";
+        std::cout << "Name: " << satisfyingEnemy->name << "\n";
+        std::cout << "Health: " << satisfyingEnemy->health << "\n";
+        std::cout << "Score: " << satisfyingEnemy->score << "\n";
+    }
+    else
+    {
+        std::cout << "No enemy satisfies the criteria." << std::endl;
+    }
+
+    std::cout << "\n============ Part 12 ============\n\n";
+    int unusedEnemySlots = enemies.capacity() - enemies.size();
+    std::cout << "Size before reserve: " << enemies.size() << "\n";
+    std::cout << "Capacity before reserve: " << enemies.capacity() << "\n";
+
+    if(unusedEnemySlots < 6)
+    {
+		// reserve() is appropriate because it adds capacity without adding empty enemies
+        enemies.reserve(enemies.size() + 6);
+    }
+
+    std::cout << "Size after reserve: " << enemies.size() << "\n";
+    std::cout << "Capacity after reserve: " << enemies.capacity() << "\n";
+
+    addReinforcement(enemies, { 301, "Wraith", 30, 520});
+    addReinforcement(enemies, {302, "Golem", 120, 800});
+    addReinforcement(enemies, {303, "Imp", 10, 90});
+    addReinforcement(enemies, {304, "Vampire", 60, 950});
+    addReinforcement(enemies, {305, "Hunter", 75, 650});
+    addReinforcement(enemies, {306, "Demon", 95, 1300});
+
+    int activeEnemies = std::count_if(enemies.begin(), enemies.end(),
+        [](const Enemy& e)
+        {
+            return e.health > 0;
+        });
+    auto firstLowHealth = std::find_if(enemies.begin(), enemies.end(),
+		[](const Enemy& e)
+		{
+			return e.health > 0 && e.health < 20;
+		});
+	auto firstHighScore = std::find_if(enemies.begin(), enemies.end(),
+		[](const Enemy& e)
+		{
+			return e.score > 1000;
+		});
     
+    displayEnemies(enemies);    
+    std::cout << "\n|-----Battle summary-----|\n";
+
+    std::cout << "\nActive enemies: " << activeEnemies << "\n";
+    std::cout << "Vector size: " << enemies.size() << "\n";
+    std::cout << "Vector capacity: " << enemies.capacity() << "\n";
+    std::cout << "Unused capacity: " << enemies.capacity() - enemies.size() << "\n";
+
+    std::cout << "\n";
+    if (firstLowHealth != enemies.end())
+	{
+		std::cout << "First living enemy below 20 health: " << firstLowHealth->name << std::endl;
+	}
+	else
+	{
+		std::cout << "No living enemy below 20 health" << std::endl;
+	}
+	if (firstHighScore != enemies.end())
+	{
+		std::cout << "First enemy with score above 1000: " << firstHighScore->name << std::endl;
+	}
+	else
+	{
+		std::cout << "No enemy with score above 1000" << std::endl;
+	}
+    std::cout << "\n";
+    std::cout << "\n";
+
     return 0;
 }
