@@ -135,7 +135,52 @@ int countSearchStepsCircular(PlayerNode* head, int targetID)
     return steps;
 }
 
-bool removeByIDCircular(PlayerNode*& head,PlayerNode*& tail,int targetID);
+// O(n) worst case because finding the target may require checking every node
+bool removeByIDCircular(PlayerNode*& head, PlayerNode*& tail, int targetID)
+{
+    if (head == nullptr)
+    {
+        return false;
+    }
+
+    PlayerNode* current = head;
+    PlayerNode* previous = tail;
+
+    do
+    {
+        if (current->data.id == targetID)
+        {
+            if (head == tail)
+            {
+                delete current;
+                head = nullptr;
+                tail = nullptr;
+                return true;
+            }
+
+            previous->next = current->next;
+
+            if (current == head)
+            {
+                head = current->next;
+            }
+
+            if (current == tail)
+            {
+                tail = previous;
+            }
+
+            tail->next = head;
+            delete current;
+            return true;
+        }
+
+        previous = current;
+        current = current->next;
+    } while (current != head);
+
+    return false;
+}
 
 void playTurns(PlayerNode* head, int numberOfTurns);
 
@@ -219,4 +264,86 @@ int main()
         }
     }
 
+    // part 6
+    // reconnecting pointers is O(1) but searching for the target is O(n)
+    std::cout << "\n---Remove By ID---\n";
+    std::cout << "Remove head Rogue: ";
+
+    if (removeByIDCircular(head, tail, 200))
+    {
+        cout << "removed" << endl;
+    }
+    else
+    {
+        cout << "not found" << endl;
+    }
+    displayCircular(head);
+
+    cout << "\nRemove middle Mage: ";
+    if (removeByIDCircular(head, tail, 202))
+    {
+        cout << "removed" << endl;
+    }
+    else
+    {
+        cout << "not found" << endl;
+    }
+    displayCircular(head);
+
+    cout << "\nRemove tail Healer: ";
+    if (removeByIDCircular(head, tail, 204))
+    {
+        cout << "removed" << endl;
+    }
+    else
+    {
+        cout << "not found" << endl;
+    }
+    displayCircular(head);
+
+    cout << "\nRemove missing 999: ";
+    if (removeByIDCircular(head, tail, 999))
+    {
+        cout << "removed" << endl;
+    }
+    else
+    {
+        cout << "not found" << endl;
+    }
+    displayCircular(head);
+
+    PlayerNode* oneHead = nullptr;
+    PlayerNode* oneTail = nullptr;
+    insertEndCircular(oneHead, oneTail, {1, "Warrior", 100});
+    cout << "\nRemove only node: ";
+    if (removeByIDCircular(oneHead, oneTail, 1))
+    {
+        cout << "removed" << endl;
+    }
+    else
+    {
+        cout << "not found" << endl;
+    }
+
+    cout << "\nOne node list is now empty: ";
+    if (oneHead == nullptr && oneTail == nullptr)
+    {
+        cout << "true" << endl;
+    }
+    else
+    {
+        cout << "false" << endl;
+    }
+
+    cout << "\nRemove from empty list: ";
+    if (removeByIDCircular(oneHead, oneTail, 1))
+    {
+        cout << "removed" << endl;
+    }
+    else
+    {
+        cout << "not found" << endl;
+    }
+
+   
 };
