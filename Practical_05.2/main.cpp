@@ -435,4 +435,50 @@ int main()
         cout << "not found" << endl;
     }
 
-};
+
+    //part9
+    // A - 3 pointers assignment O(1)
+    // B - 1 loop visits every nodes onmce O(n)
+    // C - loop visits every node for each outer node O(n^2)
+
+    // part 10
+    // 11- without tail O(n)
+    // 12- With tail O(1) 
+    // 13- Keeping tail is better for many end insertions 
+    // 14- Keeping tail does not make searching O(1); search is still O(n)
+
+    // part 11
+    // Deleting all n nodes is O(n).
+    std::cout << "\n---Cleanup---\n";
+    clearCircular(head, tail);
+    cout << "head == nullptr and tail == nullptr: ";
+    if (head == nullptr && tail == nullptr)
+    {
+        cout << "true" << endl;
+    }
+    else
+    {
+        cout << "false" << endl;
+    }
+
+    return 0;
+}
+
+/*
+BIG-O SUMMARY
+
+createNode()                  : O(1)
+insertBeginningCircular()     : O(1)
+insertEndCircular()           : O(1)
+displayCircular()             : O(n)
+searchCircular() best case    : O(1)
+searchCircular() worst case   : O(n)
+removeByIDCircular() worst    : O(n)
+playTurns()                   : O(t)
+pairwiseComparisons()         : O(n^2)
+clearCircular()               : O(n)
+
+Most important lesson:
+a circular list loops back on itself, so stop traversing once you reach the node you started from
+keeping a tail pointer makes inserting at the end O(1) but searching still takes O(n).
+*/
