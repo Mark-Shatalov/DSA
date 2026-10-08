@@ -182,11 +182,72 @@ bool removeByIDCircular(PlayerNode*& head, PlayerNode*& tail, int targetID)
     return false;
 }
 
-void playTurns(PlayerNode* head, int numberOfTurns);
+// O(t) t is numberOfTurns
+void playTurns(PlayerNode* head, int numberOfTurns)
+{
+    if (head == nullptr || numberOfTurns <= 0)
+    {
+        return;
+    }
 
-int pairwiseComparisons(PlayerNode* head);
+    PlayerNode* current = head;
 
-void clearCircular(PlayerNode*& head, PlayerNode*& tail);
+    for (int turn = 1; turn <= numberOfTurns; turn++)
+    {
+        cout << "Turn " << turn << ": " << current->data.name << endl;
+        current = current->next;
+    }
+}
+
+// O(n^2): each of the n players is compared with all n players
+int pairwiseComparisons(PlayerNode* head)
+{
+    if(head == nullptr)
+    {
+        return 0;
+    }
+
+    int comparisons = 0;
+    PlayerNode* currentPlayer = head;
+
+    do
+    {
+        PlayerNode* comparedPlayer = head;
+
+        do
+        {
+            comparisons++;
+            comparedPlayer = comparedPlayer->next;
+        } while (comparedPlayer != head);
+
+        currentPlayer = currentPlayer->next;
+    } while (currentPlayer != head);
+
+    return comparisons;
+}
+
+// O(n) deletes n nodes
+void clearCircular(PlayerNode*& head, PlayerNode*& tail)
+{
+    if (head == nullptr)
+    {
+        tail = nullptr;
+        return;
+    }
+
+    PlayerNode* current = head->next;
+
+    while (current != head)
+    {
+        PlayerNode* nodeToDelete = current;
+        current = current->next;
+        delete nodeToDelete;
+    }
+
+    delete head;
+    head = nullptr;
+    tail = nullptr;
+}
 
 
 int main()
@@ -262,6 +323,35 @@ int main()
         {
             std::cout << "-Not found-\n";
         }
+    }
+
+    // part 7
+    // complexity: O(t) where t is the number of turns
+    // no reset to head is needed
+    // circular linking allows repeated cycling without reaching nullptr
+    std::cout << "\n---Game Turn Simulation---\n";
+    playTurns(head, 7);
+
+    //part 8
+    // 5 to 10 players increases comparisons from 25 to 100.  
+    std::cout << "\n\t\t---Pairwise Comparisons---\n";
+    std::cout << "Players n\tExpected Comparisons\tActual\t\tBig-O" << endl;
+
+    for (int playerCount = 3; playerCount <= 5; playerCount++)
+    {
+        PlayerNode* testHead = nullptr;
+        PlayerNode* testTail = nullptr;
+
+        for (int id = 1; id <= playerCount; id++)
+        {
+            insertEndCircular(testHead, testTail, {id, "Player" + to_string(id), 100});
+        }
+
+        int expected = playerCount * playerCount;
+        int actual = pairwiseComparisons(testHead);
+        cout << playerCount << "\t\t\t" << expected << "\t\t"<< actual << "\t\tO(n^2)" << endl;
+
+        clearCircular(testHead, testTail);
     }
 
     // part 6
@@ -345,5 +435,4 @@ int main()
         cout << "not found" << endl;
     }
 
-   
 };
