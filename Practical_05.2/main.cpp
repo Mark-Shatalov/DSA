@@ -61,7 +61,9 @@ void insertEndCircular(PlayerNode*& head, PlayerNode*& tail, Player player)
     tail->next = head;
 }
 
-// O(n): displays all players in the circular list
+// prints n nodes
+// so the complexity is O(n)
+// checking current != nullptr is unsafe - because a circular list never reaches nullptr
 void displayCircular(PlayerNode* head)
 {
     if(head==nullptr)
@@ -84,9 +86,54 @@ void displayCircular(PlayerNode* head)
     std::cout << "---Back to head: " << head->data.name << "---\n";
 }
 
-bool searchCircular(PlayerNode* head, int targetID);
+// best case O(1)
+// worst case O(n)
+bool searchCircular(PlayerNode* head, int targetID)
+{
+    if (head == nullptr)
+    {
+        return false;
+    }
 
-int countSearchStepsCircular(PlayerNode* head, int targetID);
+    PlayerNode* current = head;
+    do
+    {
+        if (current->data.id == targetID)
+        {
+            return true;
+        }
+
+        current = current->next;
+    } while (current != head);
+
+    return false;
+}
+
+// counts how many nodes are checked during the search
+int countSearchStepsCircular(PlayerNode* head, int targetID)
+{
+    if (head == nullptr)
+    {
+        return 0;
+    }
+
+    int steps = 0;
+    PlayerNode* current = head;
+
+    do
+    {
+        steps++;
+
+        if (current->data.id == targetID)
+        {
+            return steps;
+        }
+
+        current = current->next;
+    } while (current != head);
+
+    return steps;
+}
 
 bool removeByIDCircular(PlayerNode*& head,PlayerNode*& tail,int targetID);
 
@@ -139,5 +186,37 @@ int main()
     }
 
     //part 4
-    // print 
+    // prints n nodes
+    // so the complexity is O(n)
+    // checking current != nullptr is unsafe - because a circular list never reaches nullptr 
+    displayCircular(head);
+
+    // part 5
+    // best case: O(1) 
+    // worst case: O(n) 
+    // a missing target is important because every node must be checked
+
+    std::cout << "\n---Search Table---\n";
+    std::cout << " =Target=\t=Predicted steps=\t =Actual steps=\t\t =Case=\n";
+
+    int searchIDs[] = {200, 202, 204, 999};
+    int predictedSteps[] = {1, 3, 5, 5};
+    string labels[] = {"200 - Rogue", "202 - Mage", "204 - Healer", "999 - Missing"};
+    string cases[] = {"Best case", "Average case", "Worst case", "Missing case"};
+
+    for(int i = 0; i < 4; i++)
+    {
+        int actualSteps = countSearchStepsCircular(head, searchIDs[i]);
+        std::cout << labels[i] << "\t\t" << predictedSteps[i] << "\t\t\t" << actualSteps << "\t\t" << cases[i] << "\n";
+
+        if(searchCircular(head, searchIDs[i]))
+        {
+            std::cout << "-Found-\n";
+        }
+        else
+        {
+            std::cout << "-Not found-\n";
+        }
+    }
+
 };
