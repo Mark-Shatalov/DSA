@@ -480,5 +480,5 @@ clearCircular()               : O(n)
 
 Most important lesson:
 a circular list loops back on itself, so stop traversing once you reach the node you started from
-keeping a tail pointer makes inserting at the end O(1) but searching still takes O(n).
+keeping a tail pointer makes inserting at the end O(1) but searching still takes O(n)
 */
